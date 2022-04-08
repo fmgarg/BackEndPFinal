@@ -44,10 +44,10 @@ class Contenedor {
     async save(cart, producto, cartId) {
         try {
             
-            cart ["cartId"] = cartId
+            cart ["elem"] = producto
             //cart.push(producto)
             console.log(cart)
-            productos.push(cart, producto)
+            productos.push(cart)
             console.log(`el nuevo objeto fue guardado con el id ${cartId}`)
             
             await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
@@ -68,7 +68,7 @@ class Contenedor {
         try {
             let products = await items.getAll()
             //console.log(products)
-            let buscarProductoXId = products.find(elem => elem.cartId == ID);
+            let buscarProductoXId = products.filter(elem => elem.cartId == ID);
             //console.log(buscarProductoXId)
             if (buscarProductoXId == null){                
                 console.log('el producto no existe');
@@ -185,6 +185,7 @@ carritoRouter.post('/', async (req, res)=>{
   //console.log(req.query)
 
   let cart = new Object()
+  cart ["cartId"] = cartId
 
   let newProduct = await items.save (cart, req.body, cartId)
   //productos.push(req.body)
