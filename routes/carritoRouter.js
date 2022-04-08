@@ -12,9 +12,6 @@ let productosNotParse = fs.readFileSync('./carrito.json', 'utf-8')
 let productos = JSON.parse(productosNotParse)
 //console.log(productos)
 
-//let Contenedor = require('../components/contenedor')
-
-//let productos = [{"title":"tijera","price":"100","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":1},{"title":"cartuchera","price":"200","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":2},{"title":"mochila","price":"10000","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":3}]
 
 const newObjeto = {
     "title":"Pez Globo",                                                                                                                          
@@ -44,14 +41,16 @@ class Contenedor {
             }
         }
 
-    async save(producto) {
+    async save(cart, producto, cartId) {
         try {
-            producto ["id"] = productos.length + 1
-            //console.log(producto)
-            productos.push(producto)
-            console.log(`el nuevo objeto fue guardado con el id ${producto.id}`)
             
-            fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
+            cart ["cartId"] = cartId
+            //cart.push(producto)
+            console.log(cart)
+            productos.push(cart, producto)
+            console.log(`el nuevo objeto fue guardado con el id ${cartId}`)
+            
+            await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
                                                                                         if(error){
                                                                                         } else {
                                                                                         console.log("se guardo un nuevo producto.")
@@ -68,8 +67,8 @@ class Contenedor {
     async getByID(ID) {
         try {
             let products = await items.getAll()
-            console.log(products)
-            let buscarProductoXId = products.find(elem => elem.id == ID);
+            //console.log(products)
+            let buscarProductoXId = products.find(elem => elem.cartId == ID);
             //console.log(buscarProductoXId)
             if (buscarProductoXId == null){                
                 console.log('el producto no existe');
@@ -166,7 +165,7 @@ class Contenedor {
 
 }
 
-const items = new Contenedor ('productos.json');
+const items = new Contenedor ('carrito.json');
 
 
 //---------------------------------------------------------creacion de las rutas--------------------------------------------------------------------------
@@ -177,10 +176,17 @@ carritoRouter.get ('/', async (req, res)=>{
     res.json(products)
 })
 
-// PTO "A" es para crear un carrito crear el idCart y timeStamp
+// PTO "A" es para crear un carrito crear el cartId y timeStamp
 carritoRouter.post('/', async (req, res)=>{
-  console.log(req.body)
-  let newProduct = await items.save (req.body)
+  //console.log(req.body)
+
+  cartId = JSON.parse(req.query.user)
+  //cartID = 28888888 
+  //console.log(req.query)
+
+  let cart = new Object()
+
+  let newProduct = await items.save (cart, req.body, cartId)
   //productos.push(req.body)
   res.json({mensaje: 'Se creo un carrito'})
 })
@@ -197,8 +203,8 @@ carritoRouter.delete ("/:ID", async (req, res)=>{
 */
 
 // PTO "C" esta ruta lista todos los productos de un id de carrito  
-carritoRouter.get ('/:ID/productos', async (req, res)=>{
-    number = JSON.parse(req.params.ID)
+carritoRouter.get ('/:cartId/productos', async (req, res)=>{
+    number = JSON.parse(req.params.cartId)
     //console.log(number)
     let product = await items.getByID(number)
     res.json(product)
