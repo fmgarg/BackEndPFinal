@@ -44,20 +44,47 @@ class Contenedor {
     async save(cart, producto, cartId) {
         try {
             
-            cart ["elem"] = producto
-            //cart.push(producto)
-            console.log(cart)
-            productos.push(cart)
-            console.log(`el nuevo objeto fue guardado con el id ${cartId}`)
-            
-            await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
-                                                                                        if(error){
-                                                                                        } else {
-                                                                                        console.log("se guardo un nuevo producto.")
-                                                                                        }
-                                                                                    }
-            )
+            let carritoExiste = await items.getByID (cartId)
 
+            //console.log(carritoExiste)
+
+            if (carritoExiste.length === 0){
+                cart ["elem"] = producto
+                //console.log(cart)
+                productos.push(cart)
+                console.log(`el nuevo carrito tiene el id ${cartId}`)
+                
+                await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
+                        if(error){
+                        } else {
+                        console.log("se guardo un nuevo producto.")
+                        }
+                })
+            }else {                
+                //console.log('hay que agregar')
+                //carritoExiste.push(producto)
+                //console.log(carritoExiste)
+
+                const cartPut = await items.getByID (cartId)
+                cartPut.push (producto)
+                //console.log(cartPut)
+                console.log(cartPut)
+                
+
+                const index = productos.findIndex(item => item.cartId === cartId)
+                //console.log(index)
+                productos.splice (index, 1,cartPut )
+                console.log(productos)
+                
+                
+                await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
+                    if(error){
+                    } else {
+                    console.log("se agrego un producto a su carrito")
+                    }
+                })
+                
+            }                                                                        
         }
         catch (err) {
             console.log('no se pudo agregar');
@@ -84,7 +111,7 @@ class Contenedor {
     async deleteByID(ID) {
         try {
             let products = await items.getAll()
-            console.log(products)
+            //console.log(products)
             const eliminado = products.filter ((item) => item.id == ID);
             //console.log(eliminado)
             if (eliminado.length === 0) { 
