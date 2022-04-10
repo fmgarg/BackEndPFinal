@@ -41,18 +41,20 @@ class Contenedor {
             }
         }
 
-    async save(cart, producto, cartId) {
+    async save(producto, cartId, userId) {
         try {
             
-            let carritoExiste = await items.getByID (cartId)
+            let carritoExiste = await items.getByID (userId)
 
             //console.log(carritoExiste)
 
             if (carritoExiste.length === 0){
-                cart ["elem"] = producto
+                let cart = {userId, itemsCart : []}
+                cart.itemsCart.push(producto)
+                //cart ["elementos"] = producto
                 //console.log(cart)
                 productos.push(cart)
-                console.log(`el nuevo carrito tiene el id ${cartId}`)
+                //console.log(`el nuevo carrito tiene el id ${userId}`)
                 
                 await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
                         if(error){
@@ -61,21 +63,21 @@ class Contenedor {
                         }
                 })
             }else {                
-                //console.log('hay que agregar')
-                //carritoExiste.push(producto)
-                //console.log(carritoExiste)
+                console.log('este es el else')
 
-                const cartPut = await items.getByID (cartId)
-                cartPut.push (producto)
-                //console.log(cartPut)
-                console.log(cartPut)
+                //--------traigo el carrito viejo----------
+                const oldCart = await items.getByID (userId)
+                const updatedCart = oldCart[0]
+                updatedCart.itemsCart.push (producto)
+                console.log(updatedCart.itemsCart)
                 
-
-                const index = productos.findIndex(item => item.cartId === cartId)
+                
+                const index = productos.findIndex(item => item.userId === userId)
                 //console.log(index)
-                productos.splice (index, 1,cartPut )
-                console.log(productos)
+                productos.splice (index, 1,updatedCart )
+                //console.log(productos)
                 
+
                 
                 await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
                     if(error){
@@ -91,11 +93,11 @@ class Contenedor {
         }
     }
 
-    async getByID(ID) {
+    async getByID(userId) {
         try {
             let products = await items.getAll()
             //console.log(products)
-            let buscarProductoXId = products.filter(elem => elem.cartId == ID);
+            let buscarProductoXId = products.filter(elem => elem.userId == userId);
             //console.log(buscarProductoXId)
             if (buscarProductoXId == null){                
                 console.log('el producto no existe');
@@ -207,14 +209,15 @@ carritoRouter.get ('/', async (req, res)=>{
 carritoRouter.post('/', async (req, res)=>{
   //console.log(req.body)
 
-  cartId = JSON.parse(req.query.user)
-  //cartID = 28888888 
-  //console.log(req.query)
+  userId = JSON.parse(req.query.user)
 
-  let cart = new Object()
-  cart ["cartId"] = cartId
+  cartId = {}
+  cartId ['cartId'] = userId
+  //console.log(cartId)
+  
+  
 
-  let newProduct = await items.save (cart, req.body, cartId)
+  let newProduct = await items.save (req.body, cartId, userId)
   //productos.push(req.body)
   res.json({mensaje: 'Se creo un carrito'})
 })
@@ -232,9 +235,9 @@ carritoRouter.delete ("/:ID", async (req, res)=>{
 
 // PTO "C" esta ruta lista todos los productos de un id de carrito  
 carritoRouter.get ('/:cartId/productos', async (req, res)=>{
-    number = JSON.parse(req.params.cartId)
+    userId = JSON.parse(req.params.cartId)
     //console.log(number)
-    let product = await items.getByID(number)
+    let product = await items.getByID(userId)
     res.json(product)
 })
 
