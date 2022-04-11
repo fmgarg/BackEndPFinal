@@ -67,18 +67,19 @@ class Contenedor {
 
                 //--------traigo el carrito viejo----------
                 const oldCart = await items.getByID (userId)
+                //--------creo el carrito actualizado con nuevo productos----------
                 const updatedCart = oldCart[0]
                 updatedCart.itemsCart.push (producto)
                 console.log(updatedCart.itemsCart)
                 
-                
+                //-----------busco el carrito por userId y le sumo el nuevo item/ producto----------
                 const index = productos.findIndex(item => item.userId === userId)
                 //console.log(index)
                 productos.splice (index, 1,updatedCart )
                 //console.log(productos)
                 
 
-                
+                //----------escribo el file del carrito con la actualizacion------
                 await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
                     if(error){
                     } else {
@@ -110,28 +111,60 @@ class Contenedor {
         }
     }
 
-    async deleteByID(ID) {
+    async deleteByID(ID, cartId, userId) {
         try {
-            let products = await items.getAll()
-            //console.log(products)
-            const eliminado = products.filter ((item) => item.id == ID);
-            //console.log(eliminado)
-            if (eliminado.length === 0) { 
-                console.log('el producto no existe')
-            }else{
-                const resultado = productos.filter ((item) => item.id !== ID)
-                       // console.log('producto eliminado')
-                        const producto = await items.getByID (ID)
-                        const index = products.indexOf(producto)
-                        productos.splice (index, 1)
+            let cart = await items.getByID(cartId)
+            
+            //aca deconstruyo el carrito para poder trabajar sobre los productos
+            let articulos = cart[0]
+            let articulosArr = articulos.itemsCart
+            //console.log(articulosArr)
 
-                        fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
-                            if(error){
-                            } else {
-                            console.log("se elimino un producto.")
-                            }
-                         })
-                 return resultado
+
+            const itemToDel = articulosArr.filter ((item) => item.id == ID);
+            //console.log(itemToDel)
+
+            if (itemToDel.length === 0) { 
+                console.log('no se ubico el producto a eliminar')
+            }else{
+                console.log('aca se eliminara el producto del carrito')
+                
+                //aca elimino el item del carrito
+                const resultado = articulosArr.filter ((item) => item.id !== ID)
+                //console.log(resultado)
+
+                //aca reconstruyo el carrito
+                const updatedCart = {userId, itemsCart : []}
+                updatedCart.itemsCart.push(resultado)
+                //console.log(updatedCart)
+
+                //aca elimino de la variable productos/carritoContainer el carrito sin actualizar 
+                //const oldCartContainer = productos.filter ((item) => item.userId !== userId)
+                //console.log(oldCartContainer)
+                
+
+                //aca agrego el updatedCart al carrito
+                //const newCartContainer = oldCartContainer
+                //console.log(newCartContainer)
+
+                const newCartContainer = await items.getAll ()
+                //console.log(oldCartContainer)
+                const index = newCartContainer.findIndex(item => item.userId === userId)
+                console.log(index)
+
+                newCartContainer.splice (index, 1,updatedCart )
+                console.log(newCartContainer)
+
+                
+                await fs.writeFile('./carrito.json', JSON.stringify(newCartContainer, null, 4), error =>{
+                        if(error){
+                        } else {
+                        console.log("carrito actualizado.")
+                        }
+                })
+                
+
+                return resultado
             }
         } catch (error) {
             console.error(`Error: ${error}`);
@@ -205,7 +238,7 @@ carritoRouter.get ('/', async (req, res)=>{
     res.json(products)
 })
 
-// PTO "A" es para crear un carrito crear el cartId y timeStamp
+// PTO "A" y "D" es para crear un carrito, crear el cartId, y para agregar productos al carrito por su ID de producto.
 carritoRouter.post('/', async (req, res)=>{
   //console.log(req.body)
 
@@ -214,8 +247,6 @@ carritoRouter.post('/', async (req, res)=>{
   cartId = {}
   cartId ['cartId'] = userId
   //console.log(cartId)
-  
-  
 
   let newProduct = await items.save (req.body, cartId, userId)
   //productos.push(req.body)
@@ -223,8 +254,8 @@ carritoRouter.post('/', async (req, res)=>{
 })
 
 /*
-// PTO "B" vacia un carrito y lo elimina por idCart
-carritoRouter.delete ("/:ID", async (req, res)=>{
+// PTO "B" vacia un carrito y lo elimina por cartId
+carritoRouter.delete ("/:cartId", async (req, res)=>{
     number = JSON.parse(req.params.ID)
     //console.log(number)
     let products = await items.deleteByID(number)
@@ -241,7 +272,8 @@ carritoRouter.get ('/:cartId/productos', async (req, res)=>{
     res.json(product)
 })
 
-// PTO "D" aca la ruta a implementar es :ID/productos Es para agregar productos al carrito por su ID de producto
+/*
+// ------------ruta no implementada-----------
 carritoRouter.put ('/:ID', async (req, res)=>{
     //console.log(req.body)
     let newPrice = req.body
@@ -250,12 +282,16 @@ carritoRouter.put ('/:ID', async (req, res)=>{
     let putProduct = await items.putByID(req.params.ID, newPrice)
     res.json(putProduct)
 })
+*/
 
-// PTO "E" aca la ruta a implementar es :ID/productos/:id_prod  Elimina un producto por idCart & ID de producto
-carritoRouter.delete ("/:ID", async (req, res)=>{
-    number = JSON.parse(req.params.ID)
+
+// PTO "E" aca la ruta a implementar es :cartId/productos/:id  Elimina un producto por idCart & ID de producto
+carritoRouter.delete ("/:cartId/productos/:prodId", async (req, res)=>{
+    cartId = JSON.parse(req.params.cartId)
+    prodId = JSON.parse(req.params.prodId)
+    userId = JSON.parse(req.params.cartId)
     //console.log(number)
-    let products = await items.deleteByID(number)
+    let products = await items.deleteByID(prodId, cartId, userId)
     //console.log(product)
     res.json(products)
 })
