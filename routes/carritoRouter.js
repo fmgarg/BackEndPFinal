@@ -138,13 +138,15 @@ class Contenedor {
                 //updatedCart.itemsCart.push(resultado)
                 console.log(updatedCart)
 
+                //aca busco el indice del carrito a actualizar
                 const index = productos.findIndex(item => item.userId === userId)
                 //console.log(index)
 
+                //aca reemplazo el carrito old por el updated
                 productos.splice (index, 1,updatedCart )
                 console.log(productos)
 
-                
+                //aca escribo el cartcontainer con la nueva info
                 await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
                         if(error){
                         } else {
