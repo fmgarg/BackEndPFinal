@@ -134,29 +134,18 @@ class Contenedor {
                 //console.log(resultado)
 
                 //aca reconstruyo el carrito
-                const updatedCart = {userId, itemsCart : []}
-                updatedCart.itemsCart.push(resultado)
-                //console.log(updatedCart)
+                const updatedCart = {userId, itemsCart : resultado}
+                //updatedCart.itemsCart.push(resultado)
+                console.log(updatedCart)
 
-                //aca elimino de la variable productos/carritoContainer el carrito sin actualizar 
-                //const oldCartContainer = productos.filter ((item) => item.userId !== userId)
-                //console.log(oldCartContainer)
-                
+                const index = productos.findIndex(item => item.userId === userId)
+                //console.log(index)
 
-                //aca agrego el updatedCart al carrito
-                //const newCartContainer = oldCartContainer
-                //console.log(newCartContainer)
-
-                const newCartContainer = await items.getAll ()
-                //console.log(oldCartContainer)
-                const index = newCartContainer.findIndex(item => item.userId === userId)
-                console.log(index)
-
-                newCartContainer.splice (index, 1,updatedCart )
-                console.log(newCartContainer)
+                productos.splice (index, 1,updatedCart )
+                console.log(productos)
 
                 
-                await fs.writeFile('./carrito.json', JSON.stringify(newCartContainer, null, 4), error =>{
+                await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
                         if(error){
                         } else {
                         console.log("carrito actualizado.")
