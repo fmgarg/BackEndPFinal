@@ -27,3 +27,8 @@ const carritoRouter = require ('./routes/carritoRouter')
 app.use('/productos', productosRouter)
 
 app.use('/carrito', carritoRouter)
+
+app.get('*', function(req, res){
+  //res.sendFile(__dirname+’/public/error.html’);
+  res.send('ruta no implementada')
+  })

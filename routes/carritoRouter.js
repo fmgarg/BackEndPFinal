@@ -162,6 +162,42 @@ class Contenedor {
         }
     }
 
+    async deleteCartByID(cartId, userId) {
+        try {
+
+            //aca busco el indice del carrito a eliminar
+            const index = productos.findIndex(item => item.userId === userId)
+            console.log(index)
+            
+
+            if (index.length === 0) { 
+                console.log('no se ubico el carrito a eliminar')
+            }else{
+                console.log('aca se eliminara el carrito del cartContainer')
+
+                
+                //aca elimino el carrito por su index
+                productos.splice (index, 1)
+                //console.log(productos)
+                
+
+                
+                //aca escribo el cartcontainer con la nueva info
+                await fs.writeFile('./carrito.json', JSON.stringify(productos, null, 4), error =>{
+                        if(error){
+                        } else {
+                        console.log("contenedor de carritos actualizado.")
+                        }
+                })
+                
+
+                return productos
+            }
+        } catch (error) {
+            console.error(`Error: ${error}`);
+        }
+    }
+
     async putByID(ID, newPrice) {
         try {
             let products = await items.getAll()
@@ -244,16 +280,21 @@ carritoRouter.post('/', async (req, res)=>{
   res.json({mensaje: 'Se creo un carrito'})
 })
 
-/*
+
 // PTO "B" vacia un carrito y lo elimina por cartId
-carritoRouter.delete ("/:cartId", async (req, res)=>{
-    number = JSON.parse(req.params.ID)
-    //console.log(number)
-    let products = await items.deleteByID(number)
-    //console.log(product)
-    res.json(products)
+carritoRouter.delete ('/:cartId', async (req, res)=>{
+    cartId = JSON.parse(req.params.cartId)
+    //console.log(cartId)
+    userId = JSON.parse(req.params.cartId)
+    //console.log(userId)
+
+    let product = await items.deleteCartByID(cartId, userId)
+    //console.log(products)
+    //res.json(products)
+
+    res.json(product)
 })
-*/
+
 
 // PTO "C" esta ruta lista todos los productos de un id de carrito  
 carritoRouter.get ('/:cartId/productos', async (req, res)=>{
@@ -261,6 +302,17 @@ carritoRouter.get ('/:cartId/productos', async (req, res)=>{
     //console.log(number)
     let product = await items.getByID(userId)
     res.json(product)
+})
+
+// PTO "E" aca la ruta a implementar es :cartId/productos/:id  Elimina un producto por idCart & ID de producto
+carritoRouter.delete ("/:cartId/productos/:prodId", async (req, res)=>{
+    cartId = JSON.parse(req.params.cartId)
+    prodId = JSON.parse(req.params.prodId)
+    userId = JSON.parse(req.params.cartId)
+    //console.log(number)
+    let products = await items.deleteByID(prodId, cartId, userId)
+    //console.log(product)
+    res.json(products)
 })
 
 /*
@@ -274,18 +326,6 @@ carritoRouter.put ('/:ID', async (req, res)=>{
     res.json(putProduct)
 })
 */
-
-
-// PTO "E" aca la ruta a implementar es :cartId/productos/:id  Elimina un producto por idCart & ID de producto
-carritoRouter.delete ("/:cartId/productos/:prodId", async (req, res)=>{
-    cartId = JSON.parse(req.params.cartId)
-    prodId = JSON.parse(req.params.prodId)
-    userId = JSON.parse(req.params.cartId)
-    //console.log(number)
-    let products = await items.deleteByID(prodId, cartId, userId)
-    //console.log(product)
-    res.json(products)
-})
 
 //exportando el modulo
 module.exports = carritoRouter
