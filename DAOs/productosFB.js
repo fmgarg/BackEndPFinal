@@ -6,11 +6,13 @@ const productosFB = express.Router ()
 
 const fs = require('fs');
 
-const nombreArchivo = 'productos.json'
+//const nombreArchivo = 'productos.json'
 
-let productosNotParse = fs.readFileSync('./productos.json', 'utf-8')
+let productos = []
+
+//let productosNotParse = fs.readFileSync('./productos.json', 'utf-8')
 //console.log(productosNotParse)
-let productos = JSON.parse(productosNotParse)
+//let productos = JSON.parse(productosNotParse)
 //console.log(productos)
 
 //let Contenedor = require('../components/contenedor')
@@ -31,11 +33,20 @@ class Contenedor {
         };
 
     async getAll() {
+        const db = admin.firestore()
+        const query = await db.collection ('productos')
             try {
 
                 if (this.listaProductos !== []) {
+                    const queryTodos = await query.get()
+                    const response = await queryTodos.docs.map((doc)=> ({
+                        id: doc.id,
+                        title: doc.data().title,
+            
+                    }))
+                    return response
                     //console.log(productosParse)
-                    return productos;
+                    //return productos;
                 } else {
                     throw 'no hay productos para mostrar'
                 }
@@ -169,8 +180,38 @@ class Contenedor {
 
 const items = new Contenedor ('productos.json');
 
+/*----------FIREBASE-----------*/
 
-//---------------------------------------------------------creacion de las rutas--------------------------------------------------------------------------
+var admin = require("firebase-admin");
+
+var serviceAccount = require ('../basenodejs-b6ec8-firebase-adminsdk-pleil-3ab9bdd6b3.json') ;
+//const firebaseConfig = require ('./basenodejs-b6ec8-firebase-adminsdk-pleil-3ab9bdd6b3.json') 
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://basenodejs-b6ec8-default-rtdb.firebaseio.com"
+});
+
+let elemento = CRUD()
+async function CRUD () {
+    const db = admin.firestore()
+    const query = await db.collection ('productos')
+    try {
+        const queryTodos = await query.get()
+        const response = await queryTodos.docs.map((doc)=> ({
+            id: doc.id,
+            title: doc.data().title,
+
+        }))
+        return response
+    }catch (e) {
+        console.log (e)
+    }
+}
+console.log( elemento)
+
+
+//--------creacion de las rutas------------------------
 
 //Pto "A" esta ruta permite listar todos los productos 
 productosFB.get ('/', async (req, res)=>{

@@ -1,4 +1,4 @@
-//----------FIREBASE-----------
+/*----------FIREBASE-----------
 
 var admin = require("firebase-admin");
 
@@ -9,7 +9,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://basenodejs-b6ec8-default-rtdb.firebaseio.com"
 });
-
+*/
 
 
 //----------SERVIDOR CON EXPRESS--------
@@ -69,7 +69,7 @@ app.use('/Mg/carrito', carritoMg)
 
 
 
-//-----Respuesta a rutas no implementadas-----
+/*-----Respuesta a rutas no implementadas-----*/
 
 app.get('*', function(req, res){
   //res.sendFile(__dirname+’/public/error.html’);
