@@ -1,7 +1,7 @@
 const express = require ('express')
 const req = require('express/lib/request')
 
-const carritoRouter = express.Router ()
+const carritoFS = express.Router ()
 
 const fs = require('fs');
 
@@ -260,13 +260,13 @@ const items = new Contenedor ('carrito.json');
 //---------------------------------------------------------creacion de las rutas--------------------------------------------------------------------------
 
 //esta ruta lista todos los carritos PTO0
-carritoRouter.get ('/', async (req, res)=>{
+carritoFS.get ('/', async (req, res)=>{
     let products = await items.getAll()
     res.json(products)
 })
 
 // PTO "A" y "D" es para crear un carrito, crear el cartId, y para agregar productos al carrito por su ID de producto.
-carritoRouter.post('/', async (req, res)=>{
+carritoFS.post('/', async (req, res)=>{
   //console.log(req.body)
 
   userId = JSON.parse(req.query.user)
@@ -282,7 +282,7 @@ carritoRouter.post('/', async (req, res)=>{
 
 
 // PTO "B" vacia un carrito y lo elimina por cartId
-carritoRouter.delete ('/:cartId', async (req, res)=>{
+carritoFS.delete ('/:cartId', async (req, res)=>{
     cartId = JSON.parse(req.params.cartId)
     //console.log(cartId)
     userId = JSON.parse(req.params.cartId)
@@ -297,7 +297,7 @@ carritoRouter.delete ('/:cartId', async (req, res)=>{
 
 
 // PTO "C" esta ruta lista todos los productos de un id de carrito  
-carritoRouter.get ('/:cartId/productos', async (req, res)=>{
+carritoFS.get ('/:cartId/productos', async (req, res)=>{
     userId = JSON.parse(req.params.cartId)
     //console.log(number)
     let product = await items.getByID(userId)
@@ -305,7 +305,7 @@ carritoRouter.get ('/:cartId/productos', async (req, res)=>{
 })
 
 // PTO "E" aca la ruta a implementar es :cartId/productos/:id  Elimina un producto por idCart & ID de producto
-carritoRouter.delete ("/:cartId/productos/:prodId", async (req, res)=>{
+carritoFS.delete ("/:cartId/productos/:prodId", async (req, res)=>{
     cartId = JSON.parse(req.params.cartId)
     prodId = JSON.parse(req.params.prodId)
     userId = JSON.parse(req.params.cartId)
@@ -328,4 +328,4 @@ carritoRouter.put ('/:ID', async (req, res)=>{
 */
 
 //exportando el modulo
-module.exports = carritoRouter
+module.exports = carritoFS

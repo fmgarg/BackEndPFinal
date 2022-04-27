@@ -2,7 +2,7 @@ const express = require ('express')
 const req = require('express/lib/request');
 const res = require('express/lib/response');
 
-const productosRouter = express.Router ()
+const productosMg = express.Router ()
 
 const fs = require('fs');
 
@@ -173,13 +173,13 @@ const items = new Contenedor ('productos.json');
 //---------------------------------------------------------creacion de las rutas--------------------------------------------------------------------------
 
 //Pto "A" esta ruta permite listar todos los productos 
-productosRouter.get ('/', async (req, res)=>{
+productosMg.get ('/', async (req, res)=>{
     let products = await items.getAll()
     res.json(products)
 })
 
 //Pto "A" esta ruta permite listar un producto por ID 
-productosRouter.get ('/:ID', async (req, res)=>{
+productosMg.get ('/:ID', async (req, res)=>{
     number = JSON.parse(req.params.ID)
     //console.log(number)
     let product = await items.getByID(number)
@@ -187,7 +187,7 @@ productosRouter.get ('/:ID', async (req, res)=>{
 })
 
 //Pto "B" ADM esta ruta permite incorporar un producto al listado de productos, asignando un ID de producto y timeStamp
-productosRouter.post('/',
+productosMg.post('/',
         function (req, res, next) {
             if (req.query.admin == 2){
                 console.log('se conecto un admin')
@@ -206,7 +206,7 @@ productosRouter.post('/',
 )
 
 //Pto "C" ADM esta ruta es para actualizar un producto por su ID
-productosRouter.put ('/:ID',
+productosMg.put ('/:ID',
     function (req, res, next) {
         if (req.query.admin == 2){
             console.log('se conecto un admin')
@@ -226,7 +226,7 @@ productosRouter.put ('/:ID',
 })
 
 //Pto "D" ADM esta ruta es para eliminar un producto por su ID
-productosRouter.delete ("/:ID", 
+productosMg.delete ("/:ID", 
     function (req, res, next) {
         if (req.query.admin == 2){
             console.log('se conecto un admin')
@@ -245,4 +245,4 @@ productosRouter.delete ("/:ID",
 })
 
 //exportando el modulo
-module.exports = productosRouter
+module.exports = productosMg

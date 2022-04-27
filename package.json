@@ -2,11 +2,11 @@
   "name": "backendpfinal",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "json-server scripts/user.js",
-    "start":"nodemon index.js"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,7 @@
   "dependencies": {
     "casual": "^1.6.2",
     "express": "^4.17.3",
+    "firebase-admin": "^10.1.0",
     "json-server": "^0.17.0",
     "moment": "^2.29.2"
   }
