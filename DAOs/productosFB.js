@@ -108,15 +108,15 @@ class Contenedor {
             const doc = query.doc(`${ID}`)
             const oldItem = await doc.get()
             const response = await oldItem.data()
-            console.log(response)
+            //console.log(response)
 
             if (response === undefined) { 
                 console.log('el producto no existe')
+                return ('el producto no existe')
             }else{
-                console.log(`aca se actualizara el producto del id:${ID}`)
+                //console.log(`aca se actualizara el producto del id:${ID}`)
                 
                 let title = news['title']
-                console.log(title)
                 let price = news['price']
                 let description = news['description']
                 let stock = news['stock']
@@ -127,7 +127,9 @@ class Contenedor {
                     price: price,
                     description: description,
                     stock: stock
-                })   
+                })
+                
+                return ('el producto fue actualizado')
 
             }
         } catch (error) {
@@ -211,7 +213,7 @@ productosFB.put ('/:ID',
     //number = JSON.parse(req.params.ID)
     //console.log(number)
     let putProduct = await items.putByID(req.params.ID, news)
-    res.send ({ mensaje: 'actualizado'})
+    res.json ({ putProduct})
 })
 
 //Pto "D" ADM esta ruta es para eliminar un producto por su ID
