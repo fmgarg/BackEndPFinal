@@ -7,11 +7,12 @@ La API incorpora nuevas funcionalidades de persistencia de los datos (antes solo
 
 El proyecto se fue desarrollando a medida de que se iban adquiriendo las herramientas y conocimientos a través del desarrollo del curso de Backend.
 
-El proyecto se diseñó, con un front sencillo, para ser el backend de un sitio de ecommerce. Permite que los ítems/productos, sean visualizados en la landing de productos. Además, permite la navegacion por categorías de productos y, la vista del detalle de los productos, en donde se puede visualizar el detalle de la descripción y agregarlos a un carrito virtual que mostrará en todo el sitio el correspondiente ícono y la cantidad de productos agregados. 
-En cualquier momento durante la navegación, se puede acceder al detalle del carrito haciendo click sobre el ícono, y desde allí visualizar los productos agregados, eliminar un producto, vaciar el carrito y/o confirmar la orden de compra guardando el carrito en el servidor con id de carrito. 
-Además, cuenta con la posibilidad de la navegación con un perfil de administrador, el que agrega otras funcionalidades a la experiencia permitiendo agregar, modificar y eliminar productos.
+El proyecto se diseñó, para ser el backend de un sitio de ecommerce. Permite que realizar operaciones CRUD en ítems del contenedor de productos y en los ítems del contenedor del carrito de compras. 
+Las pruebas de la navegación y funcionalidad se realizaron con POSTMAN. 
+Algunas operaciones requieren del uso de un perfil de administrador con una password.
+Se utiliza la persistencia en memoria, en archivos JSON, en bases de datos de google Firestore (cluod)) y en MongoDB (local).
 
-**Aclaración: Esta es la primera entrega de un total de cuatro correspondiente a un avance del 25% de la cursada total !**
+**Aclaración: Esta es la segunda entrega de un total de cuatro correspondiente a un avance del 30% de la cursada total !**
 
 ### `Documentación adicional POSTMAN`
 
