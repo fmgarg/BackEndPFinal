@@ -6,18 +6,7 @@ const productosFB = express.Router ()
 
 const fs = require('fs');
 
-//const nombreArchivo = 'productos.json'
-
 let productos = []
-
-//let productosNotParse = fs.readFileSync('./productos.json', 'utf-8')
-//console.log(productosNotParse)
-//let productos = JSON.parse(productosNotParse)
-//console.log(productos)
-
-//let Contenedor = require('../components/contenedor')
-
-//let productos = [{"title":"tijera","price":"100","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":1},{"title":"cartuchera","price":"200","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":2},{"title":"mochila","price":"10000","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":3}]
 
 const newObjeto = {
     "title":"Pez Globo",                                                                                                                          
@@ -36,20 +25,12 @@ class Contenedor {
         const db = admin.firestore()
         const query = await db.collection ('productos')
             try {
-
-                if (this.listaProductos !== []) {
                     const queryTodos = await query.get()
                     const response = await queryTodos.docs.map((doc)=> ({
                         id: doc.id,
                         title: doc.data().title,
-            
                     }))
                     return response
-                    //console.log(productosParse)
-                    //return productos;
-                } else {
-                    throw 'no hay productos para mostrar'
-                }
 
             } catch (error) {
                 console.log(`Error: ${error}`);
@@ -58,19 +39,34 @@ class Contenedor {
 
     async save(producto) {
         try {
-            producto ["id"] = productos.length + 1
-            //console.log(producto)
-            productos.push(producto)
-            console.log(`el nuevo objeto fue guardado con el id ${producto.id}`)
-            
-            fs.writeFile('./productos.json', JSON.stringify(productos, null, 4), error =>{
-                                                                                        if(error){
-                                                                                        } else {
-                                                                                        console.log("se guardo un nuevo producto.")
-                                                                                        }
-                                                                                    }
-            )
+            //----traigo todos los productos, genero un array con los id, lo parseo y busco el valor maximo
+            let products = await items.getAll()
+            let productsIds = products.map(id => id.id)
+            let ids = productsIds.map(id => +id)
+            //console.log(ids)
+            let maxId = Math.max(...ids)
 
+            if(ids.length === 0){
+            //----genero el nuevo id y guardo el producto
+            let newId = 1
+
+            const db = admin.firestore()
+            const query = await db.collection ('productos')
+
+            let doc = query.doc(`${newId}`)
+            await doc.create (producto)
+            console.log(`el nuevo objeto fue guardado con el id ${newId}`)
+            }else{
+                //----genero el nuevo id y guardo el producto
+            let newId = maxId + 1
+
+            const db = admin.firestore()
+            const query = await db.collection ('productos')
+
+            let doc = query.doc(`${newId}`)
+            await doc.create (producto)
+            console.log(`el nuevo objeto fue guardado con el id ${newId}`)
+            }
         }
         catch (err) {
             console.log('no se pudo agregar');
@@ -79,16 +75,13 @@ class Contenedor {
 
     async getByID(ID) {
         try {
-            let products = await items.getAll()
-            console.log(products)
-            let buscarProductoXId = products.find(elem => elem.id == ID);
-            //console.log(buscarProductoXId)
-            if (buscarProductoXId == null){                
-                console.log('el producto no existe');
-            }else{
-                //console.log(buscarProductoXId);
-                return (buscarProductoXId)
-            }
+            const db = admin.firestore()
+            const query = await db.collection ('productos')
+            
+            const doc = query.doc(`${ID}`)
+            const item = await doc.get()
+            const response = item.data()
+             return response
         } catch (error) {
             console.error(`Error: ${error}`);
         }
@@ -96,85 +89,58 @@ class Contenedor {
 
     async deleteByID(ID) {
         try {
-            let products = await items.getAll()
-            console.log(products)
-            const eliminado = products.filter ((item) => item.id == ID);
-            //console.log(eliminado)
-            if (eliminado.length === 0) { 
-                console.log('el producto no existe')
-            }else{
-                const resultado = productos.filter ((item) => item.id !== ID)
-                       // console.log('producto eliminado')
-                        const producto = await items.getByID (ID)
-                        const index = products.indexOf(producto)
-                        productos.splice (index, 1)
-
-                        fs.writeFile('./productos.json', JSON.stringify(productos, null, 4), error =>{
-                            if(error){
-                            } else {
-                            console.log("se elimino un producto.")
-                            }
-                         })
-                 return resultado
-            }
+            const db = admin.firestore()
+            const query = await db.collection ('productos')
+            const doc = query.doc(`${ID}`)
+            const item = await doc.delete()
+            console.log("se borro el producto", item)
         } catch (error) {
             console.error(`Error: ${error}`);
         }
     }
 
-    async putByID(ID, newPrice) {
+    async putByID(ID, news) {
         try {
-            let products = await items.getAll()
-            //console.log(products)
-            const encontrado = products.filter ((item) => item.id == ID);
-            //console.log(encontrado)
-            if (encontrado.length === 0) { 
+
+            const db = admin.firestore()
+            const query = await db.collection ('productos')
+            
+            const doc = query.doc(`${ID}`)
+            const oldItem = await doc.get()
+            const response = await oldItem.data()
+            console.log(response)
+
+            if (response === undefined) { 
                 console.log('el producto no existe')
             }else{
-                const respuesta = {}
-                //console.log(respuesta)
-                respuesta.anterior = encontrado
-                //console.log(respuesta.anterior)
+                console.log(`aca se actualizara el producto del id:${ID}`)
                 
-                //const indexElem = encontrado.findIndex(elem => elem === "price")
-                //console.log (indexElem)
-                let newProp = newPrice['price']
-                //console.log(newProp)
+                let title = news['title']
+                console.log(title)
+                let price = news['price']
+                let description = news['description']
+                let stock = news['stock']
 
-                respuesta.actualizada = newPrice
-                //console.log(respuesta.actualizada)
+                //console.log(news)
+                let item = await doc.update({
+                    title: title,
+                    price: price,
+                    description: description,
+                    stock: stock
+                })   
 
-                const producto = await items.getByID (ID)
-                const indexObjeto = products.indexOf(producto)
-                productos.splice(indexObjeto, 1, newPrice)
-                return respuesta
-
-
-
-
-                /*const resultado = productos.filter ((item) => item.id !== ID)
-                       // console.log('producto eliminado')
-                        const producto = await items.getByID (ID)
-                        const index = products.indexOf(producto)
-                        productos.splice (index, 1)
-                 return resultado
-                 */
             }
         } catch (error) {
             console.error(`Error: ${error}`);
         }
     }
 
-    async deleteAll() { 
+    /*async deleteAll() { 
         this.listaProductos = [];
-        await fs.writeFile('./productos.json', JSON.stringify(this.listaProductos, null, 4), error =>{
-            if(error){
-            } else {
-            console.log("Se eliminaron todos los productos del contenedor.")
-            }
+        //aca hago algo
         });
         
-    }
+    }*/
 
 }
 
@@ -192,24 +158,6 @@ admin.initializeApp({
   databaseURL: "https://basenodejs-b6ec8-default-rtdb.firebaseio.com"
 });
 
-let elemento = CRUD()
-async function CRUD () {
-    const db = admin.firestore()
-    const query = await db.collection ('productos')
-    try {
-        const queryTodos = await query.get()
-        const response = await queryTodos.docs.map((doc)=> ({
-            id: doc.id,
-            title: doc.data().title,
-
-        }))
-        return response
-    }catch (e) {
-        console.log (e)
-    }
-}
-console.log( elemento)
-
 
 //--------creacion de las rutas------------------------
 
@@ -221,7 +169,7 @@ productosFB.get ('/', async (req, res)=>{
 
 //Pto "A" esta ruta permite listar un producto por ID 
 productosFB.get ('/:ID', async (req, res)=>{
-    number = JSON.parse(req.params.ID)
+    number = req.params.ID
     //console.log(number)
     let product = await items.getByID(number)
     res.json(product)
@@ -259,11 +207,11 @@ productosFB.put ('/:ID',
     },
     async (req, res)=>{
     //console.log(req.body)
-    let newPrice = req.body
+    let news = req.body
     //number = JSON.parse(req.params.ID)
     //console.log(number)
-    let putProduct = await items.putByID(req.params.ID, newPrice)
-    res.json(putProduct)
+    let putProduct = await items.putByID(req.params.ID, news)
+    res.send ({ mensaje: 'actualizado'})
 })
 
 //Pto "D" ADM esta ruta es para eliminar un producto por su ID
@@ -278,11 +226,11 @@ productosFB.delete ("/:ID",
 
     },
     async (req, res)=>{
-    number = JSON.parse(req.params.ID)
+    number = req.params.ID
     //console.log(number)
     let products = await items.deleteByID(number)
     //console.log(product)
-    res.json(products)
+    res.json({mensaje: 'se elimino correctamente'})
 })
 
 //exportando el modulo

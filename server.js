@@ -1,17 +1,3 @@
-/*----------FIREBASE-----------
-
-var admin = require("firebase-admin");
-
-var serviceAccount = require ('./basenodejs-b6ec8-firebase-adminsdk-pleil-3ab9bdd6b3.json') ;
-//const firebaseConfig = require ('./basenodejs-b6ec8-firebase-adminsdk-pleil-3ab9bdd6b3.json') 
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://basenodejs-b6ec8-default-rtdb.firebaseio.com"
-});
-*/
-
-
 //----------SERVIDOR CON EXPRESS--------
 
 const express = require('express')
