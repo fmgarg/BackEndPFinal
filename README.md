@@ -1,6 +1,7 @@
-# Primera entrega del proyecto final del curso de Back End en Coderhouse. 
+# Segunda entrega del proyecto final del curso de Back End en Coderhouse. 
 
 Este proyecto se encuentra realizado utilizando JS, NodeJS, express y bootstrap, entre otras.
+La API incorpora nuevas funcionalidades de persistencia de los datos (antes solo memoria y FileSystem) ahora con FireBase/ Firestore y MongoDB.
 
 ## Consideraciones generales
 
@@ -12,7 +13,7 @@ Además, cuenta con la posibilidad de la navegación con un perfil de administra
 
 **Aclaración: Esta es la primera entrega de un total de cuatro correspondiente a un avance del 25% de la cursada total !**
 
-### `Documentación adicional`
+### `Documentación adicional POSTMAN`
 
 Link de invitacion al workspace de POSTMAN para probar funcionalidad: [https://app.getpostman.com/join-team?invite_code=fd64d9ee278b790f1dab53a0ca9a8f77&target_code=d4772a5c1dec936316d80c576bd0e1ab](https://app.getpostman.com/join-team?invite_code=fd64d9ee278b790f1dab53a0ca9a8f77&target_code=d4772a5c1dec936316d80c576bd0e1ab).
 
