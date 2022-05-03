@@ -8,14 +8,7 @@ const fs = require('fs');
 
 const nombreArchivo = 'productos.json'
 
-let productosNotParse = fs.readFileSync('./productos.json', 'utf-8')
-//console.log(productosNotParse)
-let productos = JSON.parse(productosNotParse)
-//console.log(productos)
-
-//let Contenedor = require('../components/contenedor')
-
-//let productos = [{"title":"tijera","price":"100","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":1},{"title":"cartuchera","price":"200","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":2},{"title":"mochila","price":"10000","src":"https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg","id":3}]
+let productos = []
 
 const newObjeto = {
     "title":"Pez Globo",                                                                                                                          
@@ -31,14 +24,29 @@ class Contenedor {
         };
 
     async getAll() {
-            try {
 
+        const mongoose = require ('mongoose')
+        const modelProducto = require ('../models/productoEsquema')
+
+        const URL = 'mongodb://127.0.0.1:27017/ecommerce'
+                let bddConnect = await mongoose.connect (URL, {
+                    useNewUrlParser: true, 
+                    useUnifiedTopology: true
+                    })
+                console.log('base de datos conectada')
+
+            try {
+                
+                let response = await modelProducto.find()
+                return response
+
+                /*
                 if (this.listaProductos !== []) {
                     //console.log(productosParse)
                     return productos;
                 } else {
                     throw 'no hay productos para mostrar'
-                }
+                }*/
 
             } catch (error) {
                 console.log(`Error: ${error}`);
@@ -46,19 +54,53 @@ class Contenedor {
         }
 
     async save(producto) {
+        const mongoose = require ('mongoose')
+        const modelProducto = require ('../models/productoEsquema')
+
+        const URL = 'mongodb://127.0.0.1:27017/ecommerce'
+                let bddConnect = await mongoose.connect (URL, {
+                    useNewUrlParser: true, 
+                    useUnifiedTopology: true
+                    })
+                console.log('base de datos conectada')
+
         try {
-            producto ["id"] = productos.length + 1
-            //console.log(producto)
-            productos.push(producto)
-            console.log(`el nuevo objeto fue guardado con el id ${producto.id}`)
-            
-            fs.writeFile('./productos.json', JSON.stringify(productos, null, 4), error =>{
-                                                                                        if(error){
-                                                                                        } else {
-                                                                                        console.log("se guardo un nuevo producto.")
-                                                                                        }
-                                                                                    }
-            )
+            //----traigo todos los productos, genero un array con los id, lo parseo y busco el valor maximo
+            let products = await items.getAll()
+            let productsIds = products.map(id => id.id)
+            let ids = productsIds.map(id => +id)
+            //console.log(ids)
+            let maxId = Math.max(...ids)
+
+            if(ids.length === 0){
+            //----genero el nuevo id y guardo el producto
+            let newId = 1
+
+            let mercancia = producto
+
+            mercancia ["id"] = newId
+
+            let response = await modelProducto.insertMany(mercancia)
+            return response
+
+                
+            //console.log(`NO habia productos entonces ${producto} fue guardado con el id ${newId}`)
+            }else{
+                //----genero el nuevo id y lo inserto en producto = mercancia
+                let newId = maxId + 1
+
+                let mercancia = producto
+
+                mercancia ["id"] = newId
+
+                let response = await modelProducto.insertMany(mercancia)
+                return response
+
+                //console.log(mercancia)
+                
+            //console.log(`Habia productos entonces ${mercancia} fue guardado con el id ${newId}`)
+            }
+           
 
         }
         catch (err) {
@@ -67,103 +109,96 @@ class Contenedor {
     }
 
     async getByID(ID) {
+        const mongoose = require ('mongoose')
+        const modelProducto = require ('../models/productoEsquema')
+
+        const URL = 'mongodb://127.0.0.1:27017/ecommerce'
+                let bddConnect = await mongoose.connect (URL, {
+                    useNewUrlParser: true, 
+                    useUnifiedTopology: true
+                    })
+                console.log('base de datos conectada')
         try {
-            let products = await items.getAll()
-            console.log(products)
-            let buscarProductoXId = products.find(elem => elem.id == ID);
-            //console.log(buscarProductoXId)
-            if (buscarProductoXId == null){                
-                console.log('el producto no existe');
-            }else{
-                //console.log(buscarProductoXId);
-                return (buscarProductoXId)
-            }
+
+            let response = await modelProducto.find({id: ID})
+            return response 
         } catch (error) {
             console.error(`Error: ${error}`);
         }
     }
 
     async deleteByID(ID) {
-        try {
-            let products = await items.getAll()
-            console.log(products)
-            const eliminado = products.filter ((item) => item.id == ID);
-            //console.log(eliminado)
-            if (eliminado.length === 0) { 
-                console.log('el producto no existe')
-            }else{
-                const resultado = productos.filter ((item) => item.id !== ID)
-                       // console.log('producto eliminado')
-                        const producto = await items.getByID (ID)
-                        const index = products.indexOf(producto)
-                        productos.splice (index, 1)
+        const mongoose = require ('mongoose')
+        const modelProducto = require ('../models/productoEsquema')
 
-                        fs.writeFile('./productos.json', JSON.stringify(productos, null, 4), error =>{
-                            if(error){
-                            } else {
-                            console.log("se elimino un producto.")
-                            }
-                         })
-                 return resultado
-            }
+        const URL = 'mongodb://127.0.0.1:27017/ecommerce'
+                let bddConnect = await mongoose.connect (URL, {
+                    useNewUrlParser: true, 
+                    useUnifiedTopology: true
+                    })
+                console.log('base de datos conectada')
+
+        try {
+
+            let response = await modelProducto.deleteOne({id: ID})
+            return response 
+            
         } catch (error) {
             console.error(`Error: ${error}`);
         }
     }
 
-    async putByID(ID, newPrice) {
+    async putByID(ID, news) {
+        const mongoose = require ('mongoose')
+        const modelProducto = require ('../models/productoEsquema')
+
+        const URL = 'mongodb://127.0.0.1:27017/ecommerce'
+                let bddConnect = await mongoose.connect (URL, {
+                    useNewUrlParser: true, 
+                    useUnifiedTopology: true
+                    })
+                console.log('base de datos conectada')
+
         try {
-            let products = await items.getAll()
-            //console.log(products)
-            const encontrado = products.filter ((item) => item.id == ID);
-            //console.log(encontrado)
-            if (encontrado.length === 0) { 
+            let response = await modelProducto.find({id: ID})
+            console.log(response)
+
+            if (response === undefined) { 
                 console.log('el producto no existe')
+                return ('el producto no existe')
             }else{
-                const respuesta = {}
-                //console.log(respuesta)
-                respuesta.anterior = encontrado
-                //console.log(respuesta.anterior)
+                //console.log(`aca se actualizara el producto del id:${ID}`)
                 
-                //const indexElem = encontrado.findIndex(elem => elem === "price")
-                //console.log (indexElem)
-                let newProp = newPrice['price']
-                //console.log(newProp)
+                let title = news['title']
+                let price = news['price']
+                let description = news['description']
+                let stock = news['stock']
 
-                respuesta.actualizada = newPrice
-                //console.log(respuesta.actualizada)
-
-                const producto = await items.getByID (ID)
-                const indexObjeto = products.indexOf(producto)
-                productos.splice(indexObjeto, 1, newPrice)
-                return respuesta
-
-
-
-
-                /*const resultado = productos.filter ((item) => item.id !== ID)
-                       // console.log('producto eliminado')
-                        const producto = await items.getByID (ID)
-                        const index = products.indexOf(producto)
-                        productos.splice (index, 1)
-                 return resultado
-                 */
+                let item = await modelProducto.updateOne({id: ID}, {
+                    $set:
+                    {title: title,
+                    price: price,
+                    description: description,
+                    stock: stock}
+                })
+                console.log ('el producto fue actualizado')
+                //return ('el producto fue actualizado')
             }
         } catch (error) {
             console.error(`Error: ${error}`);
         }
     }
 
-    async deleteAll() { 
+
+    /*async deleteAll() { 
         this.listaProductos = [];
         await fs.writeFile('./productos.json', JSON.stringify(this.listaProductos, null, 4), error =>{
             if(error){
             } else {
             console.log("Se eliminaron todos los productos del contenedor.")
             }
-        });
-        
-    }
+        });    
+    }*/
 
 }
 
@@ -201,7 +236,7 @@ productosMg.post('/',
         console.log(req.body)
         let newProduct = await items.save (req.body)
         //productos.push(req.body)
-        res.json({mensaje: 'se agrego correctamente '})
+        res.json(newProduct)
         }
 )
 
@@ -217,12 +252,12 @@ productosMg.put ('/:ID',
 
     },
     async (req, res)=>{
-    //console.log(req.body)
-    let newPrice = req.body
-    //number = JSON.parse(req.params.ID)
-    //console.log(number)
-    let putProduct = await items.putByID(req.params.ID, newPrice)
-    res.json(putProduct)
+        //console.log(req.body)
+        let news = req.body
+        //number = JSON.parse(req.params.ID)
+        //console.log(number)
+        let putProduct = await items.putByID(req.params.ID, news)
+        res.json ({ putProduct})
 })
 
 //Pto "D" ADM esta ruta es para eliminar un producto por su ID
