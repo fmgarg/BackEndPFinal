@@ -181,8 +181,8 @@ class Contenedor {
                     description: description,
                     stock: stock}
                 })
-                console.log ('el producto fue actualizado')
-                //return ('el producto fue actualizado')
+                //console.log ('el producto fue actualizado')
+                return ('el producto fue actualizado')
             }
         } catch (error) {
             console.error(`Error: ${error}`);

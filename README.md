@@ -1,7 +1,7 @@
 # Segunda entrega del proyecto final del curso de Back End en Coderhouse. 
 
 Este proyecto se encuentra realizado utilizando JS, NodeJS, express y bootstrap, entre otras.
-La API incorpora nuevas funcionalidades de persistencia de los datos (antes solo memoria y FileSystem) ahora con FireBase/ Firestore y MongoDB.
+La API incorpora nuevas funcionalidades de persistencia de los datos (antes solo memoria y FileSystem) ahora con FireBase/ Firestore y MongoDB/Mongoose.
 
 ## Consideraciones generales
 
@@ -10,9 +10,13 @@ El proyecto se fue desarrollando a medida de que se iban adquiriendo las herrami
 El proyecto se diseñó, para ser el backend de un sitio de ecommerce. Permite que realizar operaciones CRUD en ítems del contenedor de productos y en los ítems del contenedor del carrito de compras. 
 Las pruebas de la navegación y funcionalidad se realizaron con POSTMAN. 
 Algunas operaciones requieren del uso de un perfil de administrador con una password.
-Se utiliza la persistencia en memoria, en archivos JSON, en bases de datos de google Firestore (cluod)) y en MongoDB (local).
+Se utiliza la persistencia en memoria, en archivos JSON, en bases de datos de google Firestore (cluod)) y en MongoDB (local) a través de Mongoose.
 
 **Aclaración: Esta es la segunda entrega de un total de cuatro correspondiente a un avance del 30% de la cursada total !**
+
+**Aclaración MongoDB: se encuentra implementada en productosMg  !**
+
+**Aclaración Firebase: se encuentra implementada en productosFB !**
 
 ### `Documentación adicional POSTMAN`
 
